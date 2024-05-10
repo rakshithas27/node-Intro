@@ -33,3 +33,5 @@ key1 = 20;
 key3 = 123
 
 console.log(obj1.key1, obj1.key3)
+
+
