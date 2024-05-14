@@ -1,28 +1,54 @@
 const http = require('http');
+const fs = require('fs');
 
 
 const server = http.createServer((req,res) => {
-    /*
-    console.log('Rakshitha');
-    res.end('Welcome to Rakshithas server ');
-    */
 
-    //Requests
-    console.log(req.url, req.method, req.headers);
-
-    //Responses
     const url = req.url;
+    const method = req.method;
+
     res.setHeader('Content-Type', 'text/html');
-    if(url === '/home') {
-        res.write('<html><body><h1>Welcome home</h1></body></html>');
-    } else if (url === '/about') {
-        res.write('<html><body><h1>Welcome to About Us page!</h1></body></html>');
-    } else if (url === '/node') {
-        res.write('<html><body><h1>Welcome to my Node Js project!!</h1></body></html>');
-    } else {
-        res.write('<html><body><h1>Page not found</h1></body></html>');
-    }
-    res.end();
+
+    if (url === '/') {
+        res.write('<html>');
+        res.write('<head><title>Form</title></head>');
+        res.write('<body>');
+        fs.readFile('message.txt',(err,data) => {
+            if(!err && data) {
+                res.write(`<p> ${data} </p>`);
+            }
+            res.write('<form action="/message" method="POST"><input type="text" name="message"><button type="submit">Send</button></form>')
+            res.write('</body>');
+            res.write('</html>');
+            return res.end();
+        })
+    } 
+    else if (url === '/message' && method === 'POST') {
+        const body = [];
+        req.on('data', (chunk) => {
+            console.log(chunk);
+            body.push(chunk);
+        });
+        req.on('end', () => {
+            const parsedBody = Buffer.concat(body).toString();
+            const message = parsedBody.split('=')[1];
+            fs.writeFile('message.txt', message, (err) => {
+                if(err) {
+                    console.log(err);
+                    res.statusCode = 500;
+                    res.end("Error saving the message");
+                    return;
+                }
+                res.statusCode = 302;
+                res.setHeader('Location', '/');
+                return res.end();
+            });
+        });  
+    }  else {
+        res.statusCode = 404;
+        res.write('<html><body><h1>Page not found!</h1></body></html>');
+        res.end();
+    }   
 });
 
 server.listen(4000, () => {
