@@ -51,4 +51,16 @@ const requestHandler = (req,res) => {
     }  
 }
 
-module.exports = requestHandler;
+
+//module.exports = requestHandler;
+
+/*module.exports = {
+    handler: requestHandler,
+    someText: 'Practicing Node'
+}*/
+
+//module.exports.handler = requestHandler;
+//module.exports.someText = 'Practicing Node'
+
+exports.handler = requestHandler;
+exports.someText = 'Practicing Node';
