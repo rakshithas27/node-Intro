@@ -24,7 +24,7 @@ const requestHandler = (req,res) => {
     else if (url === '/message' && method === 'POST') {
         const body = [];
         req.on('data', (chunk) => {
-            //console.log(chunk);
+            console.log(chunk);
             body.push(chunk);
         });
 
